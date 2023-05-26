@@ -1,82 +1,96 @@
 import React from 'react';
 import './AudioRecorder.css';
 
+// AudioRecorder component for capturing audio input and detecting a specific word
 class AudioRecorder extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.recognition = null;
-    this.isRecognizing = false;
+        this.recognition = null;
+        this.isRecognizing = false;
 
-    this.state = {
-      recording: false,
-      recognized: false,
-      wordCount: 0,
-    };
-  }
+        this.state = {
+        recording: false, // flag indicating if recording is in progress
+        recognized: false, // flag indicating if the word is recognized
+        wordCount: 0, // counter for the number of times the word is detected
+        };
 
-  componentDidMount() {
-    this.initializeRecognition();
-  }
-
-  initializeRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    this.recognition = new SpeechRecognition();
-    this.recognition.lang = 'he-IL';
-    this.recognition.continuous = true;
-
-    this.recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-      console.log('Recognized transcript:', transcript);
-
-      if (transcript.includes('לחזור')) {
-        console.log('Word "לחזור" detected');
-        this.setState((prevState) => ({ recognized: true, wordCount: prevState.wordCount + 1 }));
-      }
-    };
-  };
-
-  startRecognition = () => {
-    if (!this.isRecognizing) {
-      this.isRecognizing = true;
-      this.recognition.start();
+        this.toDetect = 'לחזור'; // word to detect
     }
-  };
 
-  stopRecognition = () => {
-    if (this.isRecognizing) {
-      this.isRecognizing = false;
-      this.recognition.stop();
+    // lifecycle method called after the component has been mounted (inserted into the DOM tree)
+    // initializes the speech recognition functionality
+    componentDidMount() {
+        this.initializeRecognition();
     }
-  };
 
-  startRecording = () => {
-    this.setState({ recording: true });
-    this.startRecognition();
-  };
+    
+    // initializes the SpeechRecognition object and sets up event handlers
+    initializeRecognition = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  stopRecording = () => {
-    this.setState({ recording: false });
-    this.stopRecognition();
-  };
+        // create a new instance of SpeechRecognition
+        this.recognition = new SpeechRecognition();
+        this.recognition.lang = 'he-IL'; // Set the language to Hebrew
+        this.recognition.continuous = true; // Enable continuous recognition
 
-  render() {
-    const { recording, recognized, wordCount } = this.state;
+        // define the event handler for the onresult event
+        this.recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        console.log('Recognized transcript:', transcript);
 
-    return (
-      <div className="audio-recorder">
-        <button className="record-button" onClick={this.startRecording} disabled={recording}>
-          Start Recording
-        </button>
-        <button className="stop-button" onClick={this.stopRecording} disabled={!recording}>
-          Stop Recording
-        </button>
-        {recognized && <p className="recognized-text">Word "לחזור" detected!</p>}
-        <p>Word count: {wordCount}</p>
-      </div>
-    );
-  }
+        if (transcript.includes(this.toDetect)) {
+            console.log(`Word "${this.toDetect}" detected`);
+            this.setState((prevState) => ({ recognized: true, wordCount: prevState.wordCount + 1 }));
+        }
+        };
+    };
+
+    
+    // starts the speech recognition process
+    startRecognition = () => {
+        if (!this.isRecognizing) {
+        this.isRecognizing = true;
+        this.recognition.start();
+        }
+    };
+
+    // stops the speech recognition process
+    stopRecognition = () => {
+        if (this.isRecognizing) {
+        this.isRecognizing = false;
+        this.recognition.stop();
+        }
+    };
+
+    // starts the recording process by enabling speech recognition
+    startRecording = () => {
+        this.setState({ recording: true });
+        this.startRecognition();
+    };
+
+    // stops the recording process by disabling speech recognition
+    stopRecording = () => {
+        this.setState({ recording: false });
+        this.stopRecognition();
+    };
+
+    render() {
+        const { recording, recognized, wordCount } = this.state;
+
+        return (
+        <div className="audio-recorder">
+            <button className="record-button" onClick={this.startRecording} disabled={recording}>
+            Start Recording
+            </button>
+            <button className="stop-button" onClick={this.stopRecording} disabled={!recording}>
+            Stop Recording
+            </button>
+            {recognized && <p className="recognized-text">Word "{this.toDetect}" detected!</p>}
+            <p>Word count: {wordCount}</p>
+        </div>
+        );
+    }
 }
 
 export default AudioRecorder;
