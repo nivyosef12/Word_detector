@@ -1,19 +1,17 @@
-// TODO: count the num of toDEtect words in a sentence
 import React from 'react';
 import './AudioRecorder.css';
 
 // AudioRecorder component for capturing audio input and detecting a specific word
 class AudioRecorder extends React.Component {
-    constructor(props) {
+    constructor(props) { 
         super(props);
 
         this.recognition = null;
         this.isRecognizing = false;
-
         this.state = {
-        recording: false, // flag indicating if recording is in progress
-        recognized: false, // flag indicating if the word is recognized
-        wordCount: 0, // counter for the number of times the word is detected
+            recording: false, // flag indicating if recording is in progress
+            recognized: false, // flag indicating if the word is recognized
+            wordCount: 0, // counter for the number of times the word is detected
         };
 
         this.toDetect = 'לחזור'; // word to detect
@@ -37,13 +35,15 @@ class AudioRecorder extends React.Component {
 
         // define the event handler for the onresult event
         this.recognition.onresult = (event) => {
-        const transcript = event.results[event.results.length - 1][0].transcript;
-        console.log('Recognized transcript:', transcript);
+            
+            const transcript = event.results[event.results.length - 1][0].transcript;
+            console.log('Recognized transcript:', transcript);
 
-        if (transcript.includes(this.toDetect)) {
-            console.log(`Word "${this.toDetect}" detected`);
-            this.setState((prevState) => ({ recognized: true, wordCount: prevState.wordCount + 1 }));
-        }
+            const matches = transcript.match(new RegExp(this.toDetect, 'g'));
+            if (matches && matches.length > 0) {
+                console.log(`Word "${this.toDetect}" detected ${matches.length} times`);
+                this.setState((prevState) => ({ recognized: true, wordCount: prevState.wordCount + matches.length }));
+            }
         };
     };
 
@@ -51,16 +51,16 @@ class AudioRecorder extends React.Component {
     // starts the speech recognition process
     startRecognition = () => {
         if (!this.isRecognizing) {
-        this.isRecognizing = true;
-        this.recognition.start();
+            this.isRecognizing = true;
+            this.recognition.start();
         }
     };
 
     // stops the speech recognition process
     stopRecognition = () => {
         if (this.isRecognizing) {
-        this.isRecognizing = false;
-        this.recognition.stop();
+            this.isRecognizing = false;
+            this.recognition.stop();
         }
     };
 
