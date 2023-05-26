@@ -1,3 +1,4 @@
+// TODO: count the num of toDEtect words in a sentence
 import React from 'react';
 import './AudioRecorder.css';
 
@@ -87,7 +88,7 @@ class AudioRecorder extends React.Component {
             Stop Recording
             </button>
             {recognized && <p className="recognized-text">Word "{this.toDetect}" detected!</p>}
-            <p>Word count: {wordCount}</p>
+            {recognized && <p>Word count: {wordCount}</p>}
         </div>
         );
     }
