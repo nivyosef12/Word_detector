@@ -17,7 +17,6 @@ class AudioRecorder extends React.Component {
         this.toDetect = 'לחזור'; // word to detect
     }
 
-    // lifecycle method called after the component has been mounted (inserted into the DOM tree)
     // initializes the speech recognition functionality
     componentDidMount() {
         this.initializeRecognition();
